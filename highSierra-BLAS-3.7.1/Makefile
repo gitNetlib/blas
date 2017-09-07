@@ -57,7 +57,7 @@ include make.inc
 
 all: $(BLASLIB)
 	mkdir objects;yes |mv *.o objects
-	mkdir lib; yes|mv *.a lib
+	mkdir lib; yes | cp *.a ../libs; yes|mv *.a lib
  
 #---------------------------------------------------------
 #  Comment out the next 6 definitions if you already have
