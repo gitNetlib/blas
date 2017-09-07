@@ -56,8 +56,8 @@ include make.inc
 #######################################################################
 
 all: $(BLASLIB)
-	mkdir objects;mv *.o objects
-	mkdir lib;mv *.a lib
+	mkdir objects;yes |mv *.o objects
+	mkdir lib; yes|mv *.a lib
  
 #---------------------------------------------------------
 #  Comment out the next 6 definitions if you already have

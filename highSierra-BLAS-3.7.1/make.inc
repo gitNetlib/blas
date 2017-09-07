@@ -16,7 +16,7 @@ PLAT = _LINUX
 #  desired load options for your machine.
 #
 FORTRAN  = gfortran
-OPTS     = -Ofast -march=native -fomit-frame-pointer -funroll-loops -ffast-math -Ofast -fno-signed-zeros -ffp-contract=fast -mmmx -msse -flto -maes -march=native
+OPTS     = -Ofast -march=native -fomit-frame-pointer -funroll-loops -ffast-math -fno-signed-zeros -ffp-contract=fast -mmmx -msse -flto -maes -march=native  -shared 
 DRVOPTS  = $(OPTS) $CFLAGS  $MATHFLAGS  
 NOOPT    =
 LOADER   = gfortran
