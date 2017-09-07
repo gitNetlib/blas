@@ -1,0 +1,1 @@
+mpirun -np 4 -hostfile nodes ./xhpl | tee test-output/HPL-small.out

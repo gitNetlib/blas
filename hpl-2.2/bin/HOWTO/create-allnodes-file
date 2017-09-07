@@ -1,0 +1,8 @@
+#!/bin/bash
+for node in `seq -w 512`
+do
+ for cpu in `seq 8`
+ do
+ echo node$node
+ done
+done > allnodes

@@ -1,0 +1,1 @@
+mpirun -np 4096 -hostfile allnodes  ./xhpl |tee test-output/HPL-large.out
