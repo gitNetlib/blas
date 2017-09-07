@@ -44,47 +44,57 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # ######################################################################
 #  
-#
-SHELL            = /bin/sh
-#
-arch             = MacOSX_Accelerate
-#
-## Targets #############################################################
-#
-all              : install
+include Make.inc
 #
 # ######################################################################
 #
-install          : startup refresh build
+INCdep           = \
+   $(INCdir)/hpl_misc.h $(INCdir)/hpl_blas.h $(INCdir)/hpl_auxil.h
 #
-startup          :
-	$(MAKE) -f Make.top startup_dir     arch=$(arch)
-	$(MAKE) -f Make.top startup_src     arch=$(arch)
-	$(MAKE) -f Make.top startup_tst     arch=$(arch)
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Object files ########################################################
 #
-refresh          :
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+HPL_au0obj       = \
+   HPL_dlacpy.o           HPL_dlatcpy.o          HPL_fprintf.o          \
+   HPL_warn.o             HPL_abort.o            HPL_dlaprnt.o          \
+   HPL_dlange.o
+HPL_au1obj       = \
+   HPL_dlamch.o
+HPL_auxobj       = \
+   $(HPL_au0obj) $(HPL_au1obj)
 #
-build            :
-	$(MAKE) -f Make.top build_src       arch=$(arch)
-	$(MAKE) -f Make.top build_tst       arch=$(arch)
+## Targets #############################################################
+#
+all     : lib
+#
+lib     : lib.grd
+#
+lib.grd : $(HPL_auxobj)
+	$(ARCHIVER) $(ARFLAGS) $(HPLlib) $(HPL_auxobj)
+	$(RANLIB) $(HPLlib)
+	$(TOUCH) lib.grd
+#
+# ######################################################################
+#
+HPL_dlacpy.o           : ../HPL_dlacpy.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlacpy.c
+HPL_dlatcpy.o          : ../HPL_dlatcpy.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlatcpy.c
+HPL_fprintf.o          : ../HPL_fprintf.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_fprintf.c
+HPL_warn.o             : ../HPL_warn.c             $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_warn.c
+HPL_abort.o            : ../HPL_abort.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_abort.c
+HPL_dlaprnt.o          : ../HPL_dlaprnt.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlaprnt.c
+HPL_dlange.o           : ../HPL_dlange.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlange.c
+HPL_dlamch.o           : ../HPL_dlamch.c           $(INCdep)
+	$(CC) -o $@ -c $(CCNOOPT)  ../HPL_dlamch.c
+#
+# ######################################################################
 #
 clean            :
-	$(MAKE) -f Make.top clean_src       arch=$(arch)
-	$(MAKE) -f Make.top clean_tst       arch=$(arch)
-#
-clean_arch       :
-	$(MAKE) -f Make.top clean_arch_src  arch=$(arch)
-	$(MAKE) -f Make.top clean_arch_tst  arch=$(arch)
-#
-clean_arch_all   :
-	$(MAKE) -f Make.top clean_arch_all  arch=$(arch)
-#
-clean_guard      :
-	$(MAKE) -f Make.top clean_guard_src arch=$(arch)
-	$(MAKE) -f Make.top clean_guard_tst arch=$(arch)
+	$(RM) *.o *.grd
 #
 # ######################################################################

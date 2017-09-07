@@ -44,47 +44,60 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # ######################################################################
 #  
-#
-SHELL            = /bin/sh
-#
-arch             = MacOSX_Accelerate
-#
-## Targets #############################################################
-#
-all              : install
+include Make.inc
 #
 # ######################################################################
 #
-install          : startup refresh build
+INCdep           = \
+   $(INCdir)/hpl_misc.h  $(INCdir)/hpl_pmisc.h  $(INCdir)/hpl_grid.h
 #
-startup          :
-	$(MAKE) -f Make.top startup_dir     arch=$(arch)
-	$(MAKE) -f Make.top startup_src     arch=$(arch)
-	$(MAKE) -f Make.top startup_tst     arch=$(arch)
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Object files ########################################################
 #
-refresh          :
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+HPL_griobj       = \
+   HPL_grid_init.o        HPL_pnum.o             HPL_grid_info.o        \
+   HPL_grid_exit.o        HPL_broadcast.o        HPL_reduce.o           \
+   HPL_all_reduce.o       HPL_barrier.o          HPL_min.o              \
+   HPL_max.o              HPL_sum.o
 #
-build            :
-	$(MAKE) -f Make.top build_src       arch=$(arch)
-	$(MAKE) -f Make.top build_tst       arch=$(arch)
+## Targets #############################################################
+#
+all     : lib 
+#
+lib     : lib.grd
+#
+lib.grd : $(HPL_griobj)
+	$(ARCHIVER) $(ARFLAGS) $(HPLlib) $(HPL_griobj)
+	$(RANLIB) $(HPLlib)
+	$(TOUCH) lib.grd
+#
+# ######################################################################
+#
+HPL_grid_init.o        : ../HPL_grid_init.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_grid_init.c
+HPL_pnum.o             : ../HPL_pnum.c             $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pnum.c
+HPL_grid_info.o        : ../HPL_grid_info.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_grid_info.c
+HPL_grid_exit.o        : ../HPL_grid_exit.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_grid_exit.c
+HPL_broadcast.o        : ../HPL_broadcast.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_broadcast.c
+HPL_reduce.o           : ../HPL_reduce.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_reduce.c
+HPL_all_reduce.o       : ../HPL_all_reduce.c       $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_all_reduce.c
+HPL_barrier.o          : ../HPL_barrier.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_barrier.c
+HPL_min.o              : ../HPL_min.c              $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_min.c
+HPL_max.o              : ../HPL_max.c              $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_max.c
+HPL_sum.o              : ../HPL_sum.c              $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_sum.c
+#
+# ######################################################################
 #
 clean            :
-	$(MAKE) -f Make.top clean_src       arch=$(arch)
-	$(MAKE) -f Make.top clean_tst       arch=$(arch)
-#
-clean_arch       :
-	$(MAKE) -f Make.top clean_arch_src  arch=$(arch)
-	$(MAKE) -f Make.top clean_arch_tst  arch=$(arch)
-#
-clean_arch_all   :
-	$(MAKE) -f Make.top clean_arch_all  arch=$(arch)
-#
-clean_guard      :
-	$(MAKE) -f Make.top clean_guard_src arch=$(arch)
-	$(MAKE) -f Make.top clean_guard_tst arch=$(arch)
+	$(RM) *.o *.grd
 #
 # ######################################################################

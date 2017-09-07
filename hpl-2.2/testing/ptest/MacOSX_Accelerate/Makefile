@@ -44,47 +44,51 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # ######################################################################
 #  
-#
-SHELL            = /bin/sh
-#
-arch             = MacOSX_Accelerate
-#
-## Targets #############################################################
-#
-all              : install
+include Make.inc
 #
 # ######################################################################
 #
-install          : startup refresh build
+INCdep           = \
+   $(INCdir)/hpl_misc.h   $(INCdir)/hpl_blas.h  $(INCdir)/hpl_auxil.h   \
+   $(INCdir)/hpl_gesv.h   $(INCdir)/hpl_pmisc.h $(INCdir)/hpl_pauxil.h  \
+   $(INCdir)/hpl_panel.h  $(INCdir)/hpl_pgesv.h $(INCdir)/hpl_pmatgen.h \
+   $(INCdir)/hpl_ptimer.h $(INCdir)/hpl_ptest.h
 #
-startup          :
-	$(MAKE) -f Make.top startup_dir     arch=$(arch)
-	$(MAKE) -f Make.top startup_src     arch=$(arch)
-	$(MAKE) -f Make.top startup_tst     arch=$(arch)
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Executable names ####################################################
+# 
+xhpl             = $(BINdir)/xhpl
 #
-refresh          :
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Object files ########################################################
 #
-build            :
-	$(MAKE) -f Make.top build_src       arch=$(arch)
-	$(MAKE) -f Make.top build_tst       arch=$(arch)
+HPL_pteobj       = \
+   HPL_pddriver.o         HPL_pdinfo.o           HPL_pdtest.o
+#
+## Targets #############################################################
+#
+all     : dexe
+#
+dexe    : dexe.grd
+#
+$(BINdir)/HPL.dat : ../HPL.dat
+	( $(CP) ../HPL.dat $(BINdir) )
+#
+dexe.grd: $(HPL_pteobj) $(HPLlib)
+	$(LINKER) $(LINKFLAGS) -o $(xhpl) $(HPL_pteobj) $(HPL_LIBS)
+	$(MAKE) $(BINdir)/HPL.dat
+	$(TOUCH) dexe.grd
+#
+# ######################################################################
+#
+HPL_pddriver.o         : ../HPL_pddriver.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pddriver.c
+HPL_pdinfo.o           : ../HPL_pdinfo.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdinfo.c
+HPL_pdtest.o           : ../HPL_pdtest.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdtest.c
+#
+# ######################################################################
 #
 clean            :
-	$(MAKE) -f Make.top clean_src       arch=$(arch)
-	$(MAKE) -f Make.top clean_tst       arch=$(arch)
-#
-clean_arch       :
-	$(MAKE) -f Make.top clean_arch_src  arch=$(arch)
-	$(MAKE) -f Make.top clean_arch_tst  arch=$(arch)
-#
-clean_arch_all   :
-	$(MAKE) -f Make.top clean_arch_all  arch=$(arch)
-#
-clean_guard      :
-	$(MAKE) -f Make.top clean_guard_src arch=$(arch)
-	$(MAKE) -f Make.top clean_guard_tst arch=$(arch)
+	$(RM) *.o *.grd
 #
 # ######################################################################

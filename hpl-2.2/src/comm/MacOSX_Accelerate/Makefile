@@ -44,47 +44,68 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # ######################################################################
 #  
-#
-SHELL            = /bin/sh
-#
-arch             = MacOSX_Accelerate
-#
-## Targets #############################################################
-#
-all              : install
+include Make.inc
 #
 # ######################################################################
 #
-install          : startup refresh build
+INCdep           = \
+   $(INCdir)/hpl_misc.h   $(INCdir)/hpl_pmisc.h   $(INCdir)/hpl_grid.h \
+   $(INCdir)/hpl_panel.h  $(INCdir)/hpl_pgesv.h
 #
-startup          :
-	$(MAKE) -f Make.top startup_dir     arch=$(arch)
-	$(MAKE) -f Make.top startup_src     arch=$(arch)
-	$(MAKE) -f Make.top startup_tst     arch=$(arch)
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Object files ########################################################
 #
-refresh          :
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+HPL_comobj       = \
+   HPL_1ring.o            HPL_1rinM.o            HPL_2ring.o            \
+   HPL_2rinM.o            HPL_blong.o            HPL_blonM.o            \
+   HPL_packL.o            HPL_copyL.o            HPL_binit.o            \
+   HPL_bcast.o            HPL_bwait.o            HPL_send.o             \
+   HPL_recv.o             HPL_sdrv.o
 #
-build            :
-	$(MAKE) -f Make.top build_src       arch=$(arch)
-	$(MAKE) -f Make.top build_tst       arch=$(arch)
+## Targets #############################################################
 #
+all     : lib 
+#
+lib     : lib.grd
+#
+lib.grd : $(HPL_comobj)
+	$(ARCHIVER) $(ARFLAGS) $(HPLlib) $(HPL_comobj)
+	$(RANLIB) $(HPLlib)
+	$(TOUCH) lib.grd
+#
+# ######################################################################
+#
+HPL_1ring.o            : ../HPL_1ring.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_1ring.c
+HPL_1rinM.o            : ../HPL_1rinM.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_1rinM.c
+HPL_2ring.o            : ../HPL_2ring.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_2ring.c
+HPL_2rinM.o            : ../HPL_2rinM.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_2rinM.c
+HPL_blong.o            : ../HPL_blong.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_blong.c
+HPL_blonM.o            : ../HPL_blonM.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_blonM.c
+HPL_packL.o            : ../HPL_packL.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_packL.c
+HPL_copyL.o            : ../HPL_copyL.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_copyL.c
+HPL_binit.o            : ../HPL_binit.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_binit.c
+HPL_bcast.o            : ../HPL_bcast.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_bcast.c
+HPL_bwait.o            : ../HPL_bwait.c            $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_bwait.c
+HPL_send.o             : ../HPL_send.c             $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_send.c
+HPL_recv.o             : ../HPL_recv.c             $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_recv.c
+HPL_sdrv.o             : ../HPL_sdrv.c             $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_sdrv.c
+#
+# ######################################################################
+# 
 clean            :
-	$(MAKE) -f Make.top clean_src       arch=$(arch)
-	$(MAKE) -f Make.top clean_tst       arch=$(arch)
-#
-clean_arch       :
-	$(MAKE) -f Make.top clean_arch_src  arch=$(arch)
-	$(MAKE) -f Make.top clean_arch_tst  arch=$(arch)
-#
-clean_arch_all   :
-	$(MAKE) -f Make.top clean_arch_all  arch=$(arch)
-#
-clean_guard      :
-	$(MAKE) -f Make.top clean_guard_src arch=$(arch)
-	$(MAKE) -f Make.top clean_guard_tst arch=$(arch)
+	$(RM) *.o *.grd
 #
 # ######################################################################

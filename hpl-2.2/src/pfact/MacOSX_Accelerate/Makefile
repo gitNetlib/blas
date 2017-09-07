@@ -44,47 +44,75 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 # ######################################################################
 #  
-#
-SHELL            = /bin/sh
-#
-arch             = MacOSX_Accelerate
-#
-## Targets #############################################################
-#
-all              : install
+include Make.inc
 #
 # ######################################################################
 #
-install          : startup refresh build
+INCdep           = \
+   $(INCdir)/hpl_misc.h  $(INCdir)/hpl_blas.h   $(INCdir)/hpl_auxil.h \
+   $(INCdir)/hpl_pmisc.h $(INCdir)/hpl_pauxil.h $(INCdir)/hpl_pfact.h
 #
-startup          :
-	$(MAKE) -f Make.top startup_dir     arch=$(arch)
-	$(MAKE) -f Make.top startup_src     arch=$(arch)
-	$(MAKE) -f Make.top startup_tst     arch=$(arch)
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+## Object files ########################################################
 #
-refresh          :
-	$(MAKE) -f Make.top refresh_src     arch=$(arch)
-	$(MAKE) -f Make.top refresh_tst     arch=$(arch)
+HPL_pfaobj       = \
+   HPL_dlocmax.o          HPL_dlocswpN.o         HPL_dlocswpT.o         \
+   HPL_pdmxswp.o          HPL_pdpancrN.o         HPL_pdpancrT.o         \
+   HPL_pdpanllN.o         HPL_pdpanllT.o         HPL_pdpanrlN.o         \
+   HPL_pdpanrlT.o         HPL_pdrpanllN.o        HPL_pdrpanllT.o        \
+   HPL_pdrpancrN.o        HPL_pdrpancrT.o        HPL_pdrpanrlN.o        \
+   HPL_pdrpanrlT.o        HPL_pdfact.o
 #
-build            :
-	$(MAKE) -f Make.top build_src       arch=$(arch)
-	$(MAKE) -f Make.top build_tst       arch=$(arch)
+## Targets #############################################################
+#
+all              : lib 
+#
+lib              : lib.grd
+#
+lib.grd          : $(HPL_pfaobj)
+	$(ARCHIVER) $(ARFLAGS) $(HPLlib) $(HPL_pfaobj)
+	$(RANLIB) $(HPLlib)
+	$(TOUCH) lib.grd
+#
+# ######################################################################
+#
+HPL_dlocmax.o          : ../HPL_dlocmax.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlocmax.c
+HPL_dlocswpN.o         : ../HPL_dlocswpN.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlocswpN.c
+HPL_dlocswpT.o         : ../HPL_dlocswpT.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_dlocswpT.c
+HPL_pdmxswp.o          : ../HPL_pdmxswp.c          $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdmxswp.c
+HPL_pdpancrN.o         : ../HPL_pdpancrN.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpancrN.c
+HPL_pdpancrT.o         : ../HPL_pdpancrT.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpancrT.c
+HPL_pdpanllN.o         : ../HPL_pdpanllN.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpanllN.c
+HPL_pdpanllT.o         : ../HPL_pdpanllT.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpanllT.c
+HPL_pdpanrlN.o         : ../HPL_pdpanrlN.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpanrlN.c
+HPL_pdpanrlT.o         : ../HPL_pdpanrlT.c         $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdpanrlT.c
+HPL_pdrpanllN.o        : ../HPL_pdrpanllN.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpanllN.c
+HPL_pdrpanllT.o        : ../HPL_pdrpanllT.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpanllT.c
+HPL_pdrpancrN.o        : ../HPL_pdrpancrN.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpancrN.c
+HPL_pdrpancrT.o        : ../HPL_pdrpancrT.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpancrT.c
+HPL_pdrpanrlN.o        : ../HPL_pdrpanrlN.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpanrlN.c
+HPL_pdrpanrlT.o        : ../HPL_pdrpanrlT.c        $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdrpanrlT.c
+HPL_pdfact.o           : ../HPL_pdfact.c           $(INCdep)
+	$(CC) -o $@ -c $(CCFLAGS)  ../HPL_pdfact.c
+#
+# ######################################################################
 #
 clean            :
-	$(MAKE) -f Make.top clean_src       arch=$(arch)
-	$(MAKE) -f Make.top clean_tst       arch=$(arch)
-#
-clean_arch       :
-	$(MAKE) -f Make.top clean_arch_src  arch=$(arch)
-	$(MAKE) -f Make.top clean_arch_tst  arch=$(arch)
-#
-clean_arch_all   :
-	$(MAKE) -f Make.top clean_arch_all  arch=$(arch)
-#
-clean_guard      :
-	$(MAKE) -f Make.top clean_guard_src arch=$(arch)
-	$(MAKE) -f Make.top clean_guard_tst arch=$(arch)
+	$(RM) *.o *.grd
 #
 # ######################################################################
